@@ -1,33 +1,32 @@
 #include "main.h"
+#include <fcntl.h>
+#include <stdlib.h>
 
 /**
- * create_file - Creates a file.
- * @filename: A pointer to the name of the file to create.
- * @text_content: A pointer to a string to write to the file.
- *
- * Return: If the function fails - -1.
- *         Otherwise - 1.
- */
+* create_file -> function that create a file
+* @filename: file to append to
+* @text_content: what to write in file in its creation
+* Return: 1 if creation success
+*/
+
 int create_file(const char *filename, char *text_content)
 {
-	int o, w, len = 0;
+	int fd, textSize, writeSize;
 
 	if (filename == NULL)
 		return (-1);
-
+	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+	if (fd == -1)
+		return (-1);
 	if (text_content != NULL)
 	{
-		for (len = 0; text_content[len];)
-			len++;
+		for (textSize = 0; text_content[textSize]; textSize++)
+			;
+		writeSize = write(fd, text_content, textSize);
 	}
 
-	o = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0600);
-	w = write(o, text_content, len);
-
-	if (o == -1 || w == -1)
+	if (writeSize == -1 || writeSize != textSize)
 		return (-1);
-
-	close(o);
-
+	close(fd);
 	return (1);
 }
